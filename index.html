@@ -1,28 +1,38 @@
 <!doctype html>
-<html lang="fr">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MathEdu Maroc</title>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Générateur gratuit de fiches d'exercices de mathématiques pour la 1ère et la 2ème année collège au Maroc.">
+<title>MathEdu Maroc | Exercices de mathématiques</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f4f7fb;color:#1b3650;font-family:system-ui,Arial,sans-serif}header{background:#13577f;color:white;padding:30px max(20px,calc((100% - 900px)/2))}h1{margin:0}main{max-width:900px;margin:24px auto;padding:0 16px}.panel{background:white;border:1px solid #d5e2ec;border-radius:15px;margin-bottom:16px;padding:24px} .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}label{display:block;font-weight:bold;margin-bottom:7px}select,input,button{font:inherit;padding:11px;border-radius:8px}select,input{width:100%;border:1px solid #aac0ce}button{background:#136a9b;border:0;color:white;cursor:pointer}button.secondary{background:#455e70}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:17px}ol li{padding:8px}.answer{color:#137551;margin-top:4px}.muted{color:#667b89}@media(max-width:680px){.grid{grid-template-columns:1fr}}@media print{header,.controls{display:none}body{background:white}.panel{border:0;padding:0}}
-</style></head>
-<body><header><h1>MathEdu Maroc</h1><p>Générateur gratuit d'exercices de mathématiques au collège</p></header>
-<main><section class="panel controls"><h2>Préparer une fiche</h2><div class="grid"><div><label for="level">Niveau</label><select id="level"><option value="1">1ère année collège</option><option value="2">2ème année collège</option></select></div><div><label for="topic">Thème</label><select id="topic"><option value="operations">Opérations</option><option value="fractions">Fractions</option><option value="relatifs">Nombres relatifs</option></select></div><div><label for="count">Questions</label><input id="count" type="number" min="1" max="30" value="10"></div></div><div class="actions"><button id="generate">Générer</button><button class="secondary" id="toggle">Afficher la correction</button><button class="secondary" id="print">Imprimer / PDF</button></div></section><section class="panel" id="sheet"><h2>Fiche d'exercices</h2><p class="muted">Choisissez un thème, puis cliquez sur « Générer ».</p></section></main>
+:root{font-family:system-ui,"Segoe UI",Arial,sans-serif;color:#17324d;background:#f5f8fc}*{box-sizing:border-box}body{margin:0}header{background:linear-gradient(105deg,#12466d,#147e96);color:white;padding:34px 20px}header>div,main,footer{max-width:920px;margin:auto}h1{margin:0 0 4px;font-size:2.1rem}header p{margin:7px 0}main{padding:20px}.card{background:white;border:1px solid #dbe5ef;border-radius:15px;padding:23px;margin-bottom:18px;box-shadow:0 4px 18px #163f5d0b}h2{margin-top:0}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}label{display:block;font-weight:650;margin-bottom:6px}select,input,button{font:inherit;border-radius:8px;padding:11px}input,select{width:100%;border:1px solid #a6bacb;background:white}button{border:0;background:#176d96;color:white;cursor:pointer;font-weight:600}button:hover{filter:brightness(.93)}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #e6a637;outline-offset:2px}.secondary{background:#40586c}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.hint{color:#617689}.exercise{padding:12px 0;border-bottom:1px solid #e8edf2}.exercise:last-child{border:0}.answer{margin-top:8px;color:#17644c;background:#f0faf5;border-left:3px solid #259a75;padding:9px}footer{padding:0 20px 30px;color:#607486;font-size:.9rem}@media(max-width:650px){.grid{grid-template-columns:1fr}}@media print{header,.controls,footer{display:none!important}body{background:white}.card{border:0;box-shadow:none;padding:0}.exercise{break-inside:avoid}.answer{background:none;color:black;border:0;padding-left:0}main{max-width:none}}
+</style></head><body>
+<header><div><h1>MathEdu Maroc</h1><p>Fiches d'exercices de mathématiques — collège marocain</p></div></header>
+<main><section class="card controls"><h2>Créer une fiche</h2><div class="grid"><div><label for="level">Niveau</label><select id="level"><option value="1">1ère année collège</option><option value="2">2ème année collège</option></select></div><div><label for="topic">Leçon</label><select id="topic"></select></div><div><label for="count">Nombre de questions</label><input id="count" type="number" min="1" max="30" value="10"></div></div><div class="actions"><button id="generate">Générer les exercices</button><button id="toggle" class="secondary" disabled>Afficher les corrections</button><button id="print" class="secondary" disabled>Imprimer / Enregistrer PDF</button></div><p class="hint">Exercices générés localement. Vérifiez les fiches avant usage en classe.</p></section>
+<section class="card" id="sheet" aria-live="polite"><h2>Fiche d'exercices</h2><p class="hint">Choisissez un niveau et une leçon, puis générez une fiche.</p></section></main>
+<footer>Projet open source sous licence MIT. Version initiale à enrichir avec les enseignants.</footer>
 <script>
 "use strict";
-const get=id=>document.getElementById(id);const randint=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;let questions=[],answersShown=false;
-const gcd=(a,b)=>b?gcd(b,a%b):a;
-function make(topic){
-if(topic==="fractions"){const den=randint(2,12),a=randint(1,9),b=randint(1,9),n=a+b,d=gcd(n,den);return {q:a+"/"+den+" + "+b+"/"+den+" = …",a:(n/d)+"/"+(den/d)}}
-if(topic==="relatifs"){const a=randint(-20,20),b=randint(-20,20);return {q:"("+a+") + ("+b+") = …",a:String(a+b)}}
-const a=randint(2,25),b=randint(2,25),op=randint(0,3);
-if(op===0)return{q:a+" + "+b+" = …",a:String(a+b)};
-if(op===1)return{q:a+" − "+b+" = …",a:String(a-b)};
-if(op===2)return{q:a+" × "+b+" = …",a:String(a*b)};
-return{q:(a*b)+" ÷ "+b+" = …",a:String(a)};
+const el=id=>document.getElementById(id);
+const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const gcd=(a,b)=>b?gcd(b,a%b):Math.abs(a);
+const topics={
+"1":[["decimals","Nombres décimaux : opérations"],["fractions","Fractions : addition et soustraction"]],
+"2":[["relative","Nombres décimaux relatifs"],["rational","Nombres rationnels : comparaison"]]
+};
+let questions=[],showAnswers=false;
+function fmt(n){return Number(n.toFixed(2)).toLocaleString("fr-FR",{maximumFractionDigits:2})}
+function fractional(n,d){const k=gcd(n,d);return (n/k)+"/"+(d/k)}
+function createQuestion(topic){
+if(topic==="decimals"){const a=rnd(10,150)/10,b=rnd(10,100)/10,op=rnd(0,2),symbols=["+","−","×"],res=[a+b,a-b,a*b][op];return {q:fmt(a)+" "+symbols[op]+" "+fmt(b)+" = …",answer:fmt(res),explain:"On effectue l'opération : "+fmt(a)+" "+symbols[op]+" "+fmt(b)+" = "+fmt(res)+"."}}
+if(topic==="fractions"){const d=rnd(2,12),a=rnd(1,10),b=rnd(1,10),minus=rnd(0,1)===1,op=minus?"−":"+",n=minus?a-b:a+b;return {q:a+"/"+d+" "+op+" "+b+"/"+d+" = …",answer:fractional(n,d),explain:"Même dénominateur : ("+a+" "+op+" "+b+")/"+d+" = "+n+"/"+d+". On simplifie si possible : "+fractional(n,d)+"."}}
+if(topic==="relative"){const a=rnd(-20,20),b=rnd(-20,20),minus=rnd(0,1)===1,op=minus?"−":"+",res=minus?a-b:a+b;return {q:"("+a+") "+op+" ("+b+") = …",answer:String(res),explain:minus?"Soustraire revient à ajouter l'opposé : "+a+" + ("+(-b)+") = "+res+".":"On additionne les nombres relatifs : "+a+" + ("+b+") = "+res+"."}}
+const d=rnd(2,10),a=rnd(1,15),b=rnd(1,15),d2=rnd(2,10),diff=a*d2-b*d,sign=diff<0?"<":diff>0?">":"=";
+return {q:a+"/"+d+" … "+b+"/"+d2+" (compléter par <, > ou =)",answer:sign,explain:"Produits en croix : "+a+" × "+d2+" = "+(a*d2)+" et "+b+" × "+d+" = "+(b*d)+". Donc "+a+"/"+d+" "+sign+" "+b+"/"+d2+"."};
 }
-function render(){const container=get("sheet");container.replaceChildren();const h=document.createElement("h2");h.textContent="Série d'exercices — "+(get("level").value==="1"?"1ère":"2ème")+" année collège";container.append(h);const info=document.createElement("p");info.textContent="Nom : ____________________    Classe : __________";container.append(info);const ol=document.createElement("ol");for(const item of questions){const li=document.createElement("li");li.append(document.createTextNode(item.q));if(answersShown){const ans=document.createElement("div");ans.className="answer";ans.textContent="Correction : "+item.a;li.append(ans)}ol.append(li)}container.append(ol)}
-get("generate").addEventListener("click",()=>{const n=Math.max(1,Math.min(30,Number(get("count").value)||10));get("count").value=n;questions=Array.from({length:n},()=>make(get("topic").value));answersShown=false;get("toggle").textContent="Afficher la correction";render()});
-get("toggle").addEventListener("click",()=>{if(!questions.length)return;answersShown=!answersShown;get("toggle").textContent=answersShown?"Masquer la correction":"Afficher la correction";render()});
-get("print").addEventListener("click",()=>window.print());
+function changeLevel(){const sel=el("topic");sel.replaceChildren();for(const [id,label] of topics[el("level").value]){const option=document.createElement("option");option.value=id;option.textContent=label;sel.append(option)}questions=[];showAnswers=false;el("toggle").disabled=true;el("print").disabled=true;el("sheet").innerHTML="<h2>Fiche d'exercices</h2><p class='hint'>Cliquez sur « Générer les exercices ».</p>";}
+function render(){const container=el("sheet");container.replaceChildren();const h=document.createElement("h2");h.textContent="Série d'exercices — "+(el("level").value==="1"?"1ère":"2ème")+" année collège";container.append(h);const subtitle=document.createElement("p");subtitle.textContent=el("topic").selectedOptions[0].textContent;container.append(subtitle);const name=document.createElement("p");name.textContent="Nom : ______________________________  Classe : __________";container.append(name);
+const list=document.createElement("ol");for(const item of questions){const li=document.createElement("li");li.className="exercise";li.append(document.createTextNode(item.q));if(showAnswers){const a=document.createElement("div");a.className="answer";a.textContent="Correction : "+item.answer+" — "+item.explain;li.append(a)}list.append(li)}container.append(list);}
+el("level").addEventListener("change",changeLevel);
+el("generate").addEventListener("click",()=>{const n=Math.max(1,Math.min(30,Math.trunc(Number(el("count").value)||10)));el("count").value=n;questions=Array.from({length:n},()=>createQuestion(el("topic").value));showAnswers=false;el("toggle").disabled=false;el("print").disabled=false;el("toggle").textContent="Afficher les corrections";render()});
+el("toggle").addEventListener("click",()=>{showAnswers=!showAnswers;el("toggle").textContent=showAnswers?"Masquer les corrections":"Afficher les corrections";render()});
+el("print").addEventListener("click",()=>window.print());changeLevel();
 </script></body></html>
