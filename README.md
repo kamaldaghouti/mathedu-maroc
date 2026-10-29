@@ -1,27 +1,41 @@
 # MathEdu Maroc
 
-Free and open-source exercise generator for Moroccan middle-school mathematics.
+**MathEdu Maroc** is a free, open-source worksheet generator for mathematics in Moroccan middle schools (collège).
 
-## Features (first prototype)
+## Current prototype
 
-- Choose 1ère or 2ème année collège.
-- Generate random arithmetic, same-denominator fraction addition, and signed-number addition questions.
-- Show or hide answer keys.
-- Print a worksheet or save it as a PDF using the browser.
-- Works locally, without an account or backend.
+| Level | Worksheet topics |
+| --- | --- |
+| 1ère année collège | Decimal arithmetic; addition and subtraction of fractions with equal denominators |
+| 2ème année collège | Addition and subtraction of signed numbers; comparison of rational numbers |
 
-## How to run
+- Generate 1 to 30 randomized questions.
+- Show or hide answers with short explanations.
+- Print or save worksheets as PDF through the browser.
+- No account, server, or personal student data required.
 
-Open [index.html](index.html) in a modern web browser.
+## Run locally
 
-## Limitations
+Download the repository and open `index.html` in a modern browser. No build tools required.
 
-This is an initial educational prototype, **not yet a curriculum-validated resource**. Both levels currently share the same exercise bank. The UI is in French, and corrections are answer keys rather than worked solutions. Please check worksheets before classroom use.
+## GitHub Pages
 
-## Contributing
+This project includes an automatic GitHub Pages deployment workflow at `.github/workflows/pages.yml`. Under **Settings → Pages → Build and deployment**, select **GitHub Actions** as the source. Check the **Actions** tab for deployment status. Once deployed, the expected URL is:
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Bug reports, instructional improvements, Arabic translations and accessibility improvements are welcome.
+https://kamaldaghouti.github.io/mathedu-maroc/
+
+The existence of this URL does **not** by itself confirm successful deployment.
+
+## Quality and limitations
+
+This is an early prototype, not a curriculum-validated teaching resource. The current lessons cover only a small portion of the Moroccan curriculum. Answers and worked explanations should be checked by a mathematics teacher before use in class. The UI is French only; Arabic translation, accessibility review, and automated tests are still planned.
+
+See [QUALITY_CHECKLIST.md](QUALITY_CHECKLIST.md) for a manual verification plan.
+
+## Contribute
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md). Contributions, bug reports, teaching feedback, accessibility improvements, and Arabic translations are welcome.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+[MIT](LICENSE).
